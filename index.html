@@ -71,7 +71,9 @@
         </div>
       </div>
 
-      <div id="vehicle-list" class="space-y-3"></div>
+      <div id="vehicle-list" class="space-y-3">
+        <div class="bg-white p-6 rounded-xl text-center text-sm text-slate-500">Gaadiyan load ho rahi hain...</div>
+      </div>
     </section>
 
     <!-- FARE CHART VIEW -->
@@ -110,7 +112,7 @@
             <input type="number" id="reg-fare" placeholder="Kiraya ₹ (e.g. 20)" required class="w-full border rounded-lg p-2.5 text-sm" />
             <input type="number" id="reg-seats" placeholder="Khali Seats (e.g. 4)" required class="w-full border rounded-lg p-2.5 text-sm" />
           </div>
-          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg text-sm">
+          <button type="submit" id="reg-submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg text-sm">
             Submit Karein
           </button>
         </form>
@@ -128,7 +130,7 @@
 
       <div id="admin-dashboard" class="hidden space-y-3">
         <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl">
-          <span class="text-xs font-bold">Admin Controls Active</span>
+          <span class="text-xs font-bold">Admin Controls Active (Live DB)</span>
           <button onclick="logoutAdmin()" class="text-xs bg-red-500 px-2.5 py-1 rounded">Logout</button>
         </div>
         <div id="admin-list" class="space-y-2.5"></div>
@@ -157,9 +159,8 @@
 
   <script>
     let selectedType = 'All';
-
-    // Admin Password Set Kiya Gaya Hai
     const ADMIN_PASSWORD = "Dusman,@1212";
+    const DB_URL = "https://firebaseio.com";
 
     const routeFares = [
       { route: "Jagatpur Local Market", auto: "₹10", bus: "-" },
@@ -170,8 +171,11 @@
       { route: "Jagatpur - Lalganj", auto: "₹45", bus: "₹35" }
     ];
 
-    const defaultVehicles = [
-      { id: 1, name: "Ramesh Kumar", phone: "9876543210", type: "E-Rickshaw", no: "UP-33 AT 4512", route: "Jagatpur Local Market", time: "07:00 AM - 08:00 PM", fare: 10, seats: 4, approved: true },
-      { id: 2, name: "Suresh Yadav", phone: "9123456789", type: "Auto", no: "UP-33 BT 8821", route: "Jagatpur - Raebareli", time: "06:30 AM - 09:00 PM", fare: 30, seats: 3, approved: true }
-    ];
+    let vehicles = [];
 
+    // Firebase se Live Data Load Karne Ka Function
+    async function loadVehicles() {
+      try {
+        const res = await fetch(`${DB_URL}.json`);
+        const data = await res.json();
+        if (data) {
