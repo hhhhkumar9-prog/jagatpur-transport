@@ -1,11 +1,126 @@
-        }
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jagatpur Local Transport</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <link rel="apple-touch-icon" href="./icon.png" />
+  <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-20">
+  <header class="bg-blue-700 text-white p-4 shadow-md sticky top-0 z-20">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div>
+        <h1 class="font-bold text-lg">🛺 Jagatpur Local Transport</h1>
+        <p class="text-xs text-blue-200">E-Rickshaw • Auto • Local Bus</p>
+      </div>
+      <button onclick="document.getElementById('sos-modal').classList.remove('hidden')" class="bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow">🚨 SOS</button>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto p-4">
+    <div class="grid grid-cols-4 gap-1.5 bg-white p-1.5 rounded-xl shadow-sm mb-4">
+      <button onclick="switchTab('passenger')" id="tab-passenger" class="py-2 text-[11px] font-bold rounded-lg bg-blue-600 text-white">🔍 Gaadi</button>
+      <button onclick="switchTab('fares')" id="tab-fares" class="py-2 text-[11px] font-bold rounded-lg text-slate-600">💰 Kiraya</button>
+      <button onclick="switchTab('register')" id="tab-register" class="py-2 text-[11px] font-bold rounded-lg text-slate-600">➕ Judein</button>
+      <button onclick="switchTab('admin')" id="tab-admin" class="py-2 text-[11px] font-bold rounded-lg text-slate-600">🔐 Admin</button>
+    </div>
+
+    <section id="view-passenger">
+      <div class="bg-white p-4 rounded-xl shadow-sm mb-4 space-y-3">
+        <select id="filter-route" onchange="renderVehicles()" class="w-full border rounded-lg p-2.5 text-sm font-medium">
+          <option value="All">Sabhi Routes (All Jagatpur)</option>
+          <option value="Jagatpur - Raebareli">Jagatpur - Raebareli</option>
+          <option value="Jagatpur - Salon">Jagatpur - Salon</option>
+          <option value="Jagatpur - Unchahar">Jagatpur - Unchahar</option>
+          <option value="Jagatpur - Dalmau">Jagatpur - Dalmau</option>
+          <option value="Jagatpur - Lalganj">Jagatpur - Lalganj</option>
+          <option value="Jagatpur Local Market">Jagatpur Local Market</option>
+        </select>
+        <div class="grid grid-cols-4 gap-1.5">
+          <button onclick="setType('All', this)" class="type-btn bg-blue-600 text-white py-2 rounded-lg text-xs font-bold">Sabhi</button>
+          <button onclick="setType('E-Rickshaw', this)" class="type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold">🛺 Rickshaw</button>
+          <button onclick="setType('Auto', this)" class="type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold">🚖 Auto</button>
+          <button onclick="setType('Local Bus', this)" class="type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold">🚌 Bus</button>
+        </div>
+      </div>
+      <div id="vehicle-list" class="space-y-3"><div class="bg-white p-6 rounded-xl text-center text-sm text-slate-500">Gaadiyan load ho rahi hain...</div></div>
+    </section>
+
+    <section id="view-fares" class="hidden bg-white p-4 rounded-xl shadow-sm">
+      <h2 class="font-bold text-base mb-2">📋 Jagatpur Tay Kiraya Suchi</h2>
+      <div id="fare-table-list" class="divide-y divide-slate-100"></div>
+    </section>
+
+    <section id="view-register" class="hidden bg-white p-4 rounded-xl shadow-sm">
+      <h2 class="font-bold text-base mb-1">Naya Driver Registration</h2>
+      <p class="text-xs text-slate-500 mb-3">Admin approval ke baad aapka number list me dikhega.</p>
+      <form onsubmit="registerDriver(event)" class="space-y-3">
+        <input type="text" id="reg-name" placeholder="Driver ka Poora Naam" required class="w-full border rounded-lg p-2.5 text-sm" />
+        <input type="tel" id="reg-phone" placeholder="Mobile Number (10 digits)" required pattern="[0-9]{10}" class="w-full border rounded-lg p-2.5 text-sm" />
+        <select id="reg-type" class="w-full border rounded-lg p-2.5 text-sm">
+          <option value="E-Rickshaw">E-Rickshaw</option><option value="Auto">Auto</option><option value="Local Bus">Local Bus</option>
+        </select>
+        <input type="text" id="reg-no" placeholder="Gaadi Number (UP-33 AT 1234)" required class="w-full border rounded-lg p-2.5 text-sm uppercase" />
+        <select id="reg-route" class="w-full border rounded-lg p-2.5 text-sm">
+          <option value="Jagatpur - Raebareli">Jagatpur - Raebareli</option><option value="Jagatpur - Salon">Jagatpur - Salon</option>
+          <option value="Jagatpur - Unchahar">Jagatpur - Unchahar</option><option value="Jagatpur - Dalmau">Jagatpur - Dalmau</option>
+          <option value="Jagatpur - Lalganj">Jagatpur - Lalganj</option><option value="Jagatpur Local Market">Jagatpur Local Market</option>
+        </select>
+        <input type="text" id="reg-time" placeholder="Timing (07:00 AM - 07:00 PM)" required class="w-full border rounded-lg p-2.5 text-sm" />
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="reg-fare" placeholder="Kiraya ₹" required class="w-full border rounded-lg p-2.5 text-sm" />
+          <input type="number" id="reg-seats" placeholder="Khali Seats" required class="w-full border rounded-lg p-2.5 text-sm" />
+        </div>
+        <button type="submit" id="reg-submit-btn" class="w-full bg-green-600 text-white font-bold py-2.5 rounded-lg text-sm">Submit Karein</button>
+      </form>
+    </section>
+
+    <section id="view-admin" class="hidden">
+      <div id="admin-login-box" class="bg-white p-5 rounded-xl shadow-sm text-center">
+        <h2 class="font-bold text-base mb-2">Admin Control Panel</h2>
+        <input type="password" id="admin-pass" placeholder="Admin Password dalein" class="w-full border rounded-lg p-2.5 text-sm mb-3 text-center" />
+        <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg text-sm">Login Karein</button>
+      </div>
+      <div id="admin-dashboard" class="hidden space-y-3">
+        <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl">
+          <span class="text-xs font-bold">Admin Controls (Live)</span>
+          <button onclick="logoutAdmin()" class="text-xs bg-red-500 px-2.5 py-1 rounded">Logout</button>
+        </div>
+        <div id="admin-list" class="space-y-2.5"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="sos-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center">
+      <h3 class="font-bold text-lg text-red-600 mb-3">🚨 Emergency Helpline</h3>
+      <a href="tel:112" class="block w-full bg-red-600 text-white font-bold py-3 rounded-xl text-sm mb-2">🚓 UP Police (112)</a>
+      <a href="tel:108" class="block w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm mb-3">🚑 Ambulance (108)</a>
+      <button onclick="document.getElementById('sos-modal').classList.add('hidden')" class="text-xs text-slate-500 underline">Band Karein</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedType = 'All', vehicles = [];
+    const ADMIN_PASSWORD = "Dusman1212";
+    const DB_URL = "https://firebaseio.com";
+    const routeFares = [
+      { route: "Jagatpur Local Market", auto: "₹10", bus: "-" }, { route: "Jagatpur - Raebareli", auto: "₹30", bus: "₹25" },
+      { route: "Jagatpur - Salon", auto: "₹35", bus: "₹25" }, { route: "Jagatpur - Unchahar", auto: "₹25", bus: "₹20" },
+      { route: "Jagatpur - Dalmau", auto: "₹30", bus: "₹20" }, { route: "Jagatpur - Lalganj", auto: "₹45", bus: "₹35" }
+    ];
+
+    async function loadVehicles() {
+      try {
+        const res = await fetch(`${DB_URL}.json`);
+        const data = await res.json();
+        vehicles = data ? Object.keys(data).map(k => ({ firebaseKey: k, ...data[k] })) : [];
         renderVehicles();
-        if (!document.getElementById('admin-dashboard').classList.contains('hidden')) {
-          renderAdminList();
-        }
-      } catch (err) {
-        console.error("Database load error:", err);
-      }
+        if (!document.getElementById('admin-dashboard').classList.contains('hidden')) renderAdminList();
+      } catch (e) { console.error(e); }
     }
 
     function switchTab(tab) {
@@ -15,358 +130,20 @@
       });
       document.getElementById('view-' + tab).classList.remove('hidden');
       document.getElementById('tab-' + tab).className = "py-2 text-[11px] font-bold rounded-lg bg-blue-600 text-white";
-      if (tab === 'passenger') loadVehicles();
-      if (tab === 'fares') renderFares();
-      if (tab === 'admin') loadVehicles();
-    }
-
-    function renderFares() {
-      const container = document.getElementById('fare-table-list');
-      container.innerHTML = routeFares.map(f => `
-        <div class="py-3 flex justify-between items-center">
-          <div>
-            <p class="font-bold text-sm text-slate-800">📍 ${f.route}</p>
-            <p class="text-[11px] text-slate-500">Auto / E-Rickshaw • Bus</p>
-          </div>
-          <div class="text-right">
-            <span class="bg-green-100 text-green-700 font-bold text-xs px-2.5 py-1 rounded-lg">Auto: ${f.auto}</span>
-            ${f.bus !== '-' ? `<span class="bg-blue-100 text-blue-700 font-bold text-xs px-2 py-1 rounded-lg ml-1">Bus: ${f.bus}</span>` : ''}
-          </div>
-        </div>
-      `).join('');
+      if (tab === 'fares') document.getElementById('fare-table-list').innerHTML = routeFares.map(f => `<div class="py-2.5 flex justify-between items-center"><span class="font-bold text-xs">📍 ${f.route}</span><div><span class="bg-green-100 text-green-700 font-bold text-xs px-2 py-1 rounded">Auto: ${f.auto}</span>${f.bus !== '-' ? `<span class="bg-blue-100 text-blue-700 font-bold text-xs px-2 py-1 rounded ml-1">Bus: ${f.bus}</span>` : ''}</div></div>`).join('');
+      else loadVehicles();
     }
 
     function setType(type, btn) {
       selectedType = type;
-      document.querySelectorAll('.type-btn').forEach(b => {
-        b.className = "type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold";
-      });
+      document.querySelectorAll('.type-btn').forEach(b => b.className = "type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold");
       btn.className = "type-btn bg-blue-600 text-white py-2 rounded-lg text-xs font-bold";
       renderVehicles();
     }
 
     function renderVehicles() {
       const route = document.getElementById('filter-route').value;
-      const list = document.getElementById('vehicle-list');
       const filtered = vehicles.filter(v => v.approved && (route === 'All' || v.route === route) && (selectedType === 'All' || v.type === selectedType));
-
-      if (filtered.length === 0) {
-        list.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-sm text-slate-500">Is route par abhi koi approved gaadi uplabdh nahi hai.</div>`;
-        return;
-      }
-
-      list.innerHTML = filtered.map(v => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700">${v.type}</span>
-              <h3 class="font-bold text-base mt-1">${v.name}</h3>
-              <p class="text-xs text-slate-500 font-mono">${v.no}</p>
-            </div>
-            <div class="text-right">
-              <span class="font-bold text-green-600 text-base">₹${v.fare}</span>
-              <p class="text-[11px] text-slate-500">${v.seats} Seats Khali</p>
-            </div>
-          </div>
-          <div class="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg mb-3">
-            📍 <b>Route:</b> ${v.route} <br> 🕒 <b>Time:</b> ${v.time}
-          </div>
-          <a href="tel:${v.phone}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs">
-            📞 Call Driver (${v.phone})
-          </a>
-        </div>
-      `).join('');
-    }
-
-    async function registerDriver(e) {
-      e.preventDefault();
-      const btn = document.getElementById('reg-submit-btn');
-      btn.innerText = "Saving...";
-      btn.disabled = true;
-
-      const newDriver = {
-        name: document.getElementById('reg-name').value,
-        phone: document.getElementById('reg-phone').value,
-        type: document.getElementById('reg-type').value,
-        no: document.getElementById('reg-no').value.toUpperCase(),
-        route: document.getElementById('reg-route').value,
-        time: document.getElementById('reg-time').value,
-        fare: document.getElementById('reg-fare').value,
-        seats: document.getElementById('reg-seats').value,
-        approved: false
-      };
-
-      try {
-        await fetch(`${DB_URL}.json`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newDriver)
-        });
-        e.target.reset();
-        alert("Registration safal! Data online save ho gaya hai. Admin approval ke baad aapki gaadi list me dikhegi.");
-        switchTab('passenger');
-      } catch (err) {
-        alert("Network error! Kripya internet check karke dobara try karein.");
-      } finally {
-        btn.innerText = "Submit Karein";
-        btn.disabled = false;
-      }
-    }
-
-    function loginAdmin() {
-      const pass = document.getElementById('admin-pass').value.trim();
-      if (pass === ADMIN_PASSWORD) {
-        document.getElementById('admin-login-box').classList.add('hidden');
-        document.getElementById('admin-dashboard').classList.remove('hidden');
-        loadVehicles();
-      } else {
-        alert("Galat Password!");
-      }
-    }
-
-    function logoutAdmin() {
-      document.getElementById('admin-login-box').classList.remove('hidden');
-      document.getElementById('admin-dashboard').classList.add('hidden');
-      document.getElementById('admin-pass').value = '';
-    }
-
-    function renderAdminList() {
-      const list = document.getElementById('admin-list');
-      if (vehicles.length === 0) {
-        list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs text-slate-500">Abhi koi driver registered nahi hai.</div>`;
-        return;
-      }
-      list.innerHTML = vehicles.map(v => `
-        <div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border">
-          <div>
-            <p class="font-bold text-sm">${v.name} <span class="text-xs font-normal text-slate-500">(${v.type})</span></p>
-            <p class="text-xs text-slate-500">${v.no} • ${v.route}</p>
-            <span class="text-[10px] font-bold ${v.approved ? 'text-green-600' : 'text-amber-600'}">
-              ${v.approved ? '✅ Approved' : '⏳ Pending Approval'}
-            </span>
-          </div>
-          <div class="flex gap-1.5">
-            ${!v.approved ? `<button onclick="approveDriver('${v.firebaseKey}')" class="bg-green-600 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold">Approve</button>` : ''}
-            <button onclick="deleteDriver('${v.firebaseKey}')" class="bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded-lg font-bold">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function approveDriver(key) {
-      await fetch(`${DB_URL}/${key}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ approved: true })
-      });
-      loadVehicles();
-    }
-
-    async function deleteDriver(key) {
-      if (confirm("Kya aap is driver ko permanently hatana chahte hain?")) {
-        await fetch(`${DB_URL}/${key}.json`, {
-          method: 'DELETE'
-        });
-        loadVehicles();
-      }
-    }
-
-    function openSOS() { document.getElementById('sos-modal').classList.remove('hidden'); }
-    function closeSOS() { document.getElementById('sos-modal').classList.add('hidden'); }
-
-    loadVehicles();
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-  </script>
-</body>
-</html>
-        }
-        renderVehicles();
-        if (!document.getElementById('admin-dashboard').classList.contains('hidden')) {
-          renderAdminList();
-        }
-      } catch (err) {
-        console.error("Database load error:", err);
-      }
-    }
-
-    function switchTab(tab) {
-      ['passenger', 'fares', 'register', 'admin'].forEach(t => {
-        document.getElementById('view-' + t).classList.add('hidden');
-        document.getElementById('tab-' + t).className = "py-2 text-[11px] font-bold rounded-lg text-slate-600";
-      });
-      document.getElementById('view-' + tab).classList.remove('hidden');
-      document.getElementById('tab-' + tab).className = "py-2 text-[11px] font-bold rounded-lg bg-blue-600 text-white";
-      if (tab === 'passenger') loadVehicles();
-      if (tab === 'fares') renderFares();
-      if (tab === 'admin') loadVehicles();
-    }
-
-    function renderFares() {
-      const container = document.getElementById('fare-table-list');
-      container.innerHTML = routeFares.map(f => `
-        <div class="py-3 flex justify-between items-center">
-          <div>
-            <p class="font-bold text-sm text-slate-800">📍 ${f.route}</p>
-            <p class="text-[11px] text-slate-500">Auto / E-Rickshaw • Bus</p>
-          </div>
-          <div class="text-right">
-            <span class="bg-green-100 text-green-700 font-bold text-xs px-2.5 py-1 rounded-lg">Auto: ${f.auto}</span>
-            ${f.bus !== '-' ? `<span class="bg-blue-100 text-blue-700 font-bold text-xs px-2 py-1 rounded-lg ml-1">Bus: ${f.bus}</span>` : ''}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function setType(type, btn) {
-      selectedType = type;
-      document.querySelectorAll('.type-btn').forEach(b => {
-        b.className = "type-btn bg-slate-100 text-slate-700 py-2 rounded-lg text-xs font-bold";
-      });
-      btn.className = "type-btn bg-blue-600 text-white py-2 rounded-lg text-xs font-bold";
-      renderVehicles();
-    }
-
-    function renderVehicles() {
-      const route = document.getElementById('filter-route').value;
-      const list = document.getElementById('vehicle-list');
-      const filtered = vehicles.filter(v => v.approved && (route === 'All' || v.route === route) && (selectedType === 'All' || v.type === selectedType));
-
-      if (filtered.length === 0) {
-        list.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-sm text-slate-500">Is route par abhi koi approved gaadi uplabdh nahi hai.</div>`;
-        return;
-      }
-
-      list.innerHTML = filtered.map(v => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700">${v.type}</span>
-              <h3 class="font-bold text-base mt-1">${v.name}</h3>
-              <p class="text-xs text-slate-500 font-mono">${v.no}</p>
-            </div>
-            <div class="text-right">
-              <span class="font-bold text-green-600 text-base">₹${v.fare}</span>
-              <p class="text-[11px] text-slate-500">${v.seats} Seats Khali</p>
-            </div>
-          </div>
-          <div class="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg mb-3">
-            📍 <b>Route:</b> ${v.route} <br> 🕒 <b>Time:</b> ${v.time}
-          </div>
-          <a href="tel:${v.phone}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs">
-            📞 Call Driver (${v.phone})
-          </a>
-        </div>
-      `).join('');
-    }
-
-    async function registerDriver(e) {
-      e.preventDefault();
-      const btn = document.getElementById('reg-submit-btn');
-      btn.innerText = "Saving...";
-      btn.disabled = true;
-
-      const newDriver = {
-        name: document.getElementById('reg-name').value,
-        phone: document.getElementById('reg-phone').value,
-        type: document.getElementById('reg-type').value,
-        no: document.getElementById('reg-no').value.toUpperCase(),
-        route: document.getElementById('reg-route').value,
-        time: document.getElementById('reg-time').value,
-        fare: document.getElementById('reg-fare').value,
-        seats: document.getElementById('reg-seats').value,
-        approved: false
-      };
-
-      try {
-        await fetch(`${DB_URL}.json`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newDriver)
-        });
-        e.target.reset();
-        alert("Registration safal! Data online save ho gaya hai. Admin approval ke baad aapki gaadi list me dikhegi.");
-        switchTab('passenger');
-      } catch (err) {
-        alert("Network error! Kripya internet check karke dobara try karein.");
-      } finally {
-        btn.innerText = "Submit Karein";
-        btn.disabled = false;
-      }
-    }
-
-    function loginAdmin() {
-      const pass = document.getElementById('admin-pass').value.trim();
-      if (pass === ADMIN_PASSWORD) {
-        document.getElementById('admin-login-box').classList.add('hidden');
-        document.getElementById('admin-dashboard').classList.remove('hidden');
-        loadVehicles();
-      } else {
-        alert("Galat Password!");
-      }
-    }
-
-    function logoutAdmin() {
-      document.getElementById('admin-login-box').classList.remove('hidden');
-      document.getElementById('admin-dashboard').classList.add('hidden');
-      document.getElementById('admin-pass').value = '';
-    }
-
-    function renderAdminList() {
-      const list = document.getElementById('admin-list');
-      if (vehicles.length === 0) {
-        list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs text-slate-500">Abhi koi driver registered nahi hai.</div>`;
-        return;
-      }
-      list.innerHTML = vehicles.map(v => `
-        <div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border">
-          <div>
-            <p class="font-bold text-sm">${v.name} <span class="text-xs font-normal text-slate-500">(${v.type})</span></p>
-            <p class="text-xs text-slate-500">${v.no} • ${v.route}</p>
-            <span class="text-[10px] font-bold ${v.approved ? 'text-green-600' : 'text-amber-600'}">
-              ${v.approved ? '✅ Approved' : '⏳ Pending Approval'}
-            </span>
-          </div>
-          <div class="flex gap-1.5">
-            ${!v.approved ? `<button onclick="approveDriver('${v.firebaseKey}')" class="bg-green-600 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold">Approve</button>` : ''}
-            <button onclick="deleteDriver('${v.firebaseKey}')" class="bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded-lg font-bold">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function approveDriver(key) {
-      await fetch(`${DB_URL}/${key}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ approved: true })
-      });
-      loadVehicles();
-    }
-
-    async function deleteDriver(key) {
-      if (confirm("Kya aap is driver ko permanently hatana chahte hain?")) {
-        await fetch(`${DB_URL}/${key}.json`, {
-          method: 'DELETE'
-        });
-        loadVehicles();
-      }
-    }
-
-    function openSOS() { document.getElementById('sos-modal').classList.remove('hidden'); }
-    function closeSOS() { document.getElementById('sos-modal').classList.add('hidden'); }
-
-    loadVehicles();
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
   </script>
 </body>
 </html>
