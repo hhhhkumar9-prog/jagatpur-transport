@@ -102,20 +102,22 @@
       <button onclick="document.getElementById('sos-modal').classList.add('hidden')" class="text-xs text-slate-500 underline">Band Karein</button>
     </div>
   </div>
-
   <script>
     let selectedType = 'All', vehicles = [];
     const ADMIN_PASSWORD = "Dusman1212";
     const DB_URL = "https://firebaseio.com";
     const routeFares = [
-      { route: "Jagatpur Local Market", auto: "₹10", bus: "-" }, { route: "Jagatpur - Raebareli", auto: "₹30", bus: "₹25" },
-      { route: "Jagatpur - Salon", auto: "₹35", bus: "₹25" }, { route: "Jagatpur - Unchahar", auto: "₹25", bus: "₹20" },
-      { route: "Jagatpur - Dalmau", auto: "₹30", bus: "₹20" }, { route: "Jagatpur - Lalganj", auto: "₹45", bus: "₹35" }
+      { route: "Jagatpur Local Market", auto: "₹10", bus: "-" },
+      { route: "Jagatpur - Raebareli", auto: "₹30", bus: "₹25" },
+      { route: "Jagatpur - Salon", auto: "₹35", bus: "₹25" },
+      { route: "Jagatpur - Unchahar", auto: "₹25", bus: "₹20" },
+      { route: "Jagatpur - Dalmau", auto: "₹30", bus: "₹20" },
+      { route: "Jagatpur - Lalganj", auto: "₹45", bus: "₹35" }
     ];
 
     async function loadVehicles() {
       try {
-        const res = await fetch(`${DB_URL}.json`);
+        const res = await fetch(DB_URL + ".json");
         const data = await res.json();
         vehicles = data ? Object.keys(data).map(k => ({ firebaseKey: k, ...data[k] })) : [];
         renderVehicles();
@@ -130,8 +132,13 @@
       });
       document.getElementById('view-' + tab).classList.remove('hidden');
       document.getElementById('tab-' + tab).className = "py-2 text-[11px] font-bold rounded-lg bg-blue-600 text-white";
-      if (tab === 'fares') document.getElementById('fare-table-list').innerHTML = routeFares.map(f => `<div class="py-2.5 flex justify-between items-center"><span class="font-bold text-xs">📍 ${f.route}</span><div><span class="bg-green-100 text-green-700 font-bold text-xs px-2 py-1 rounded">Auto: ${f.auto}</span>${f.bus !== '-' ? `<span class="bg-blue-100 text-blue-700 font-bold text-xs px-2 py-1 rounded ml-1">Bus: ${f.bus}</span>` : ''}</div></div>`).join('');
-      else loadVehicles();
+      if (tab === 'fares') {
+        document.getElementById('fare-table-list').innerHTML = routeFares.map(f => 
+          `<div class="py-2.5 flex justify-between items-center"><span class="font-bold text-xs">📍 ${f.route}</span><div><span class="bg-green-100 text-green-700 font-bold text-xs px-2 py-1 rounded">Auto: ${f.auto}</span>${f.bus !== '-' ? `<span class="bg-blue-100 text-blue-700 font-bold text-xs px-2 py-1 rounded ml-1">Bus: ${f.bus}</span>` : ''}</div></div>`
+        ).join('');
+      } else {
+        loadVehicles();
+      }
     }
 
     function setType(type, btn) {
@@ -144,6 +151,70 @@
     function renderVehicles() {
       const route = document.getElementById('filter-route').value;
       const filtered = vehicles.filter(v => v.approved && (route === 'All' || v.route === route) && (selectedType === 'All' || v.type === selectedType));
+      document.getElementById('vehicle-list').innerHTML = filtered.length ? filtered.map(v => 
+        `<div class="bg-white p-4 rounded-xl shadow-sm border"><div class="flex justify-between mb-2"><div><span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">${v.type}</span><h3 class="font-bold text-base mt-1">${v.name}</h3><p class="text-xs text-slate-500">${v.no}</p></div><div class="text-right"><span class="font-bold text-green-600">₹${v.fare}</span><p class="text-[11px] text-slate-500">${v.seats} Seats</p></div></div><div class="text-xs bg-slate-50 p-2 rounded mb-3">📍 ${v.route} | 🕒 ${v.time}</div><a href="tel:${v.phone}" class="block w-full text-center bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">📞 Call (${v.phone})</a></div>`
+      ).join('') : `<div class="bg-white p-6 rounded-xl text-center text-sm text-slate-500">Is route par abhi koi gaadi nahi hai.</div>`;
+    }
+
+    async function registerDriver(e) {
+      e.preventDefault();
+      const btn = document.getElementById('reg-submit-btn');
+      btn.innerText = "Saving..."; btn.disabled = true;
+      const newDriver = {
+        name: document.getElementById('reg-name').value,
+        phone: document.getElementById('reg-phone').value,
+        type: document.getElementById('reg-type').value,
+        no: document.getElementById('reg-no').value.toUpperCase(),
+        route: document.getElementById('reg-route').value,
+        time: document.getElementById('reg-time').value,
+        fare: document.getElementById('reg-fare').value,
+        seats: document.getElementById('reg-seats').value,
+        approved: false
+      };
+      await fetch(DB_URL + ".json", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newDriver) });
+      e.target.reset(); btn.innerText = "Submit Karein"; btn.disabled = false;
+      alert("Registration safal! Admin approval ke baad list me dikhega.");
+      switchTab('passenger');
+    }
+
+    function loginAdmin() {
+      const val = document.getElementById('admin-pass').value.trim();
+      if (val === ADMIN_PASSWORD) {
+        document.getElementById('admin-login-box').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+        loadVehicles();
+      } else {
+        alert("Galat Password!");
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('admin-login-box').classList.remove('hidden');
+      document.getElementById('admin-dashboard').classList.add('hidden');
+      document.getElementById('admin-pass').value = '';
+    }
+
+    function renderAdminList() {
+      document.getElementById('admin-list').innerHTML = vehicles.length ? vehicles.map(v => 
+        `<div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border"><div><p class="font-bold text-sm">${v.name} (${v.type})</p><p class="text-xs text-slate-500">${v.no} • ${v.route}</p><span class="text-[10px] font-bold ${v.approved ? 'text-green-600' : 'text-amber-600'}">${v.approved ? '✅ Approved' : '⏳ Pending'}</span></div><div class="flex gap-1.5">${!v.approved ? `<button onclick="approveDriver('${v.firebaseKey}')" class="bg-green-600 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold">Approve</button>` : ''}<button onclick="deleteDriver('${v.firebaseKey}')" class="bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded-lg font-bold">Delete</button></div></div>`
+      ).join('') : `<div class="bg-white p-4 rounded-xl text-center text-xs text-slate-500">Koi driver nahi hai.</div>`;
+    }
+
+    async function approveDriver(key) {
+      await fetch(DB_URL + "/" + key + ".json", { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ approved: true }) });
+      loadVehicles();
+    }
+
+    async function deleteDriver(key) {
+      if (confirm("Driver ko hatayein?")) {
+        await fetch(DB_URL + "/" + key + ".json", { method: 'DELETE' });
+        loadVehicles();
+      }
+    }
+
+    loadVehicles();
   </script>
 </body>
 </html>
+
+  
