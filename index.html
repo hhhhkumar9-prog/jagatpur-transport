@@ -106,7 +106,8 @@
   <script>
     let selectedType = 'All', vehicles = [];
     const ADMIN_PASSWORD = "Dusman1212";
-    const DB_URL = "https://firebaseio.com";
+    const DB_HOST = "://firebaseio.com";
+const DB_URL = "https://" + DB_HOST + "/vehicles";
     const routeFares = [
       { route: "Jagatpur Local Market", auto: "₹10", bus: "-" }, { route: "Jagatpur - Raebareli", auto: "₹30", bus: "₹25" },
       { route: "Jagatpur - Salon", auto: "₹35", bus: "₹25" }, { route: "Jagatpur - Unchahar", auto: "₹25", bus: "₹20" },
