@@ -7,7 +7,7 @@
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#1d4ed8" />
   <link rel="apple-touch-icon" href="./icon.png" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans pb-20">
 
@@ -121,7 +121,7 @@
     <section id="view-admin" class="hidden">
       <div id="admin-login-box" class="bg-white p-5 rounded-xl shadow-sm text-center">
         <h2 class="font-bold text-base mb-2">Admin Control Panel</h2>
-        <p class="text-xs text-slate-500 mb-3">App control karne ke liye password dalein (Default: <b>1234</b>)</p>
+        <p class="text-xs text-slate-500 mb-3">App control karne ke liye Admin password dalein</p>
         <input type="password" id="admin-pass" placeholder="Password dalein" class="w-full border rounded-lg p-2.5 text-sm mb-3 text-center" />
         <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg text-sm">Login Karein</button>
       </div>
@@ -158,6 +158,9 @@
   <script>
     let selectedType = 'All';
 
+    // Admin Password Set Kiya Gaya Hai
+    const ADMIN_PASSWORD = "Dusman,@1212";
+
     const routeFares = [
       { route: "Jagatpur Local Market", auto: "₹10", bus: "-" },
       { route: "Jagatpur - Raebareli", auto: "₹30", bus: "₹25" },
@@ -172,6 +175,3 @@
       { id: 2, name: "Suresh Yadav", phone: "9123456789", type: "Auto", no: "UP-33 BT 8821", route: "Jagatpur - Raebareli", time: "06:30 AM - 09:00 PM", fare: 30, seats: 3, approved: true }
     ];
 
-    let vehicles = JSON.parse(localStorage.getItem('jagatpur_vehicles_v2')) || defaultVehicles;
-
-    function saveData() {
