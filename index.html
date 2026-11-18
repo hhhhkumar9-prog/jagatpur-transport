@@ -108,6 +108,39 @@
       <button onclick="document.getElementById('sos-modal').classList.add('hidden')" class="text-xs text-slate-500 underline">Band Karein</button>
     </div>
   </div>
+  <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5">
+      <h3 class="font-bold text-base mb-3">✏️ Driver Details Edit Karein</h3>
+      <form onsubmit="saveDriverEdit(event)" class="space-y-2.5">
+        <input type="hidden" id="edit-key" />
+        <input type="text" id="edit-name" placeholder="Driver Name" required class="w-full border rounded-lg p-2 text-sm" />
+        <input type="tel" id="edit-phone" placeholder="Mobile Number" required pattern="[0-9]{10}" class="w-full border rounded-lg p-2 text-sm" />
+        <select id="edit-type" class="w-full border rounded-lg p-2 text-sm">
+          <option value="E-Rickshaw">E-Rickshaw</option>
+          <option value="Auto">Auto</option>
+          <option value="Local Bus">Local Bus</option>
+        </select>
+        <input type="text" id="edit-no" placeholder="Gaadi Number" required class="w-full border rounded-lg p-2 text-sm uppercase" />
+        <select id="edit-route" class="w-full border rounded-lg p-2 text-sm">
+          <option value="Jagatpur - Raebareli">Jagatpur - Raebareli</option>
+          <option value="Jagatpur - Salon">Jagatpur - Salon</option>
+          <option value="Jagatpur - Unchahar">Jagatpur - Unchahar</option>
+          <option value="Jagatpur - Dalmau">Jagatpur - Dalmau</option>
+          <option value="Jagatpur - Lalganj">Jagatpur - Lalganj</option>
+          <option value="Jagatpur Local Market">Jagatpur Local Market</option>
+        </select>
+        <input type="text" id="edit-time" placeholder="Timing" required class="w-full border rounded-lg p-2 text-sm" />
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="edit-fare" placeholder="Kiraya ₹" required class="w-full border rounded-lg p-2 text-sm" />
+          <input type="number" id="edit-seats" placeholder="Khali Seats" required class="w-full border rounded-lg p-2 text-sm" />
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('edit-modal').classList.add('hidden')" class="w-1/2 bg-slate-200 text-slate-700 font-bold py-2 rounded-lg text-xs">Cancel</button>
+          <button type="submit" id="edit-save-btn" class="w-1/2 bg-blue-600 text-white font-bold py-2 rounded-lg text-xs">Save Karein</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
    <script>
     let selectedType = 'All';
