@@ -284,7 +284,7 @@
       document.getElementById('admin-pass').value = '';
     }
 
-    function renderAdminList() {
+        function renderAdminList() {
       const list = document.getElementById('admin-list');
       if (vehicles.length === 0) {
         list.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-xs text-slate-500">Koi driver nahi hai.</div>';
@@ -294,15 +294,66 @@
         '<div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border">' +
         '<div>' +
         '<p class="font-bold text-sm">' + v.name + ' (' + v.type + ')</p>' +
+        '<p class="text-xs text-slate-600 font-medium">📞 ' + v.phone + ' • ₹' + v.fare + '</p>' +
         '<p class="text-xs text-slate-500">' + v.no + ' • ' + v.route + '</p>' +
         '<span class="text-[10px] font-bold ' + (v.approved ? 'text-green-600' : 'text-amber-600') + '">' + (v.approved ? '✅ Approved' : '⏳ Pending') + '</span>' +
         '</div>' +
-        '<div class="flex gap-1.5">' +
-        (!v.approved ? '<button onclick="approveDriver(\'' + v.firebaseKey + '\')" class="bg-green-600 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold">Approve</button>' : '') +
-        '<button onclick="deleteDriver(\'' + v.firebaseKey + '\')" class="bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded-lg font-bold">Delete</button>' +
+        '<div class="flex flex-col gap-1">' +
+        (!v.approved ? '<button onclick="approveDriver(\'' + v.firebaseKey + '\')" class="bg-green-600 text-white text-xs px-2.5 py-1 rounded-lg font-bold">Approve</button>' : '') +
+        '<button onclick="openEditModal(\'' + v.firebaseKey + '\')" class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">Edit</button>' +
+        '<button onclick="deleteDriver(\'' + v.firebaseKey + '\')" class="bg-red-100 text-red-600 text-xs px-2.5 py-1 rounded-lg font-bold">Delete</button>' +
         '</div>' +
         '</div>'
       ).join('');
+    }
+
+    function openEditModal(key) {
+      const v = vehicles.find(item => item.firebaseKey === key);
+      if (!v) return;
+      document.getElementById('edit-key').value = key;
+      document.getElementById('edit-name').value = v.name;
+      document.getElementById('edit-phone').value = v.phone;
+      document.getElementById('edit-type').value = v.type;
+      document.getElementById('edit-no').value = v.no;
+      document.getElementById('edit-route').value = v.route;
+      document.getElementById('edit-time').value = v.time;
+      document.getElementById('edit-fare').value = v.fare;
+      document.getElementById('edit-seats').value = v.seats;
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    async function saveDriverEdit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('edit-save-btn');
+      btn.innerText = "Saving...";
+      btn.disabled = true;
+
+      const key = document.getElementById('edit-key').value;
+      const updatedData = {
+        name: document.getElementById('edit-name').value,
+        phone: document.getElementById('edit-phone').value,
+        type: document.getElementById('edit-type').value,
+        no: document.getElementById('edit-no').value.toUpperCase(),
+        route: document.getElementById('edit-route').value,
+        time: document.getElementById('edit-time').value,
+        fare: document.getElementById('edit-fare').value,
+        seats: document.getElementById('edit-seats').value
+      };
+
+      try {
+        await fetch(DB_URL + "/drivers/" + key + ".json", {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+        document.getElementById('edit-modal').classList.add('hidden');
+        loadVehicles();
+      } catch (err) {
+        alert("Update nahi hua: " + err.message);
+      } finally {
+        btn.innerText = "Save Karein";
+        btn.disabled = false;
+      }
     }
 
     async function approveDriver(key) {
