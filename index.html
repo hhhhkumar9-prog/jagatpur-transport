@@ -7,12 +7,42 @@
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#1d4ed8" />
   <link rel="apple-touch-icon" href="./icon.png" />
-  <script src="https://tailwindcss.com"></script>
   <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #f1f5f9; color: #1e293b; margin: 0; padding-bottom: 80px; }
     .hidden { display: none !important; }
-    body { font-family: system-ui, -apple-system, sans-serif; background-color: #f1f5f9; margin: 0; }
+    header { background: #1d4ed8; color: white; padding: 14px 16px; position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    header > div { max-width: 450px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 18px; margin: 0; font-weight: 700; }
+    header p { font-size: 12px; color: #bfdbfe; margin: 2px 0 0; }
+    header button { background: #dc2626; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    main { max-width: 450px; margin: auto; padding: 16px; }
+    .grid-cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: white; padding: 6px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 16px; }
+    .grid-cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .grid-cols-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    button { border: none; border-radius: 8px; padding: 9px 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .bg-blue-600 { background: #2563eb !important; color: white !important; }
+    .bg-slate-100 { background: #f1f5f9; color: #334155; }
+    .bg-green-600 { background: #16a34a !important; color: white !important; }
+    .bg-red-600 { background: #dc2626 !important; color: white !important; }
+    .bg-pink-600 { background: #db2777 !important; color: white !important; }
+    .bg-emerald-600 { background: #059669 !important; color: white !important; }
+    .bg-slate-800 { background: #1e293b; color: white; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .bg-white { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 12px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 10px; background: white; }
+    a { display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 13px; margin-top: 8px; }
+    .fixed { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .fixed > div { background: white; border-radius: 16px; width: 100%; max-width: 360px; padding: 20px; }
+    .flex { display: flex; justify-content: space-between; align-items: center; }
+    .flex-col { display: flex; flex-direction: column; gap: 4px; }
+    .text-green-600 { color: #16a34a; font-weight: 700; }
+    .text-amber-600 { color: #d97706; font-weight: 700; }
+    .bg-blue-100 { background: #dbeafe; color: #1d4ed8; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .bg-red-100 { background: #fee2e2; color: #dc2626; }
+    .bg-slate-50 { background: #f8fafc; padding: 8px; border-radius: 8px; font-size: 12px; margin: 8px 0; }
   </style>
 </head>
+
 <body class="bg-slate-100 text-slate-800 font-sans pb-20">
   <header class="bg-blue-700 text-white p-4 shadow-md sticky top-0 z-20">
     <div class="max-w-md mx-auto flex items-center justify-between">
