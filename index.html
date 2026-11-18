@@ -122,9 +122,9 @@
       { route: "Jagatpur - Lalganj", auto: "₹45", bus: "₹35" }
     ];
 
-    async function loadVehicles() {
+        async function loadVehicles() {
       try {
-        const res = await fetch(DB_URL + ".json");
+        const res = await fetch(DB_URL + "/drivers.json");
         const data = await res.json();
         vehicles = data ? Object.keys(data).map(k => ({ firebaseKey: k, ...data[k] })) : [];
         renderVehicles();
@@ -132,7 +132,7 @@
           renderAdminList();
         }
       } catch (e) {
-        console.error(e);
+        console.error("Database Error:", e);
       }
     }
 
