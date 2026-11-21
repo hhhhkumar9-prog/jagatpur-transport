@@ -96,9 +96,11 @@
       <form onsubmit="registerDriver(event)" class="space-y-3">
         <input type="text" id="reg-name" placeholder="Driver ka Poora Naam" required class="w-full border rounded-lg p-2.5 text-sm" />
         <input type="tel" id="reg-phone" placeholder="Mobile Number (10 digits)" required pattern="[0-9]{10}" class="w-full border rounded-lg p-2.5 text-sm" />
-        <select id="reg-type" class="w-full border rounded-lg p-2.5 text-sm">
+                <select id="reg-type" class="w-full border rounded-lg p-2.5 text-sm">
           <option value="E-Rickshaw">E-Rickshaw</option>
           <option value="Auto">Auto</option>
+          <option value="Bike">🏍️ Bike</option>
+          <option value="Loader">🛻 Loader (Saman Dhone Wali Gaadi)</option>
           <option value="Local Bus">Local Bus</option>
         </select>
         <input type="text" id="reg-no" placeholder="Gaadi Number (UP-33 AT 1234)" required class="w-full border rounded-lg p-2.5 text-sm uppercase" />
